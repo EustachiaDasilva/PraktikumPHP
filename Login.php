@@ -1,128 +1,84 @@
 <?php
-require 'regis.php';
+$host="localhost";
+$users="root";
+$pass="";
+$database="mahasiswa";
 
-if( isset($_POST["login"]) ){
-
-    $username = $_POST["username"];
-    $password = $_POST["password"];
-
-    $result = mysqli_query($regis, "SELECT * FROM user WHERE username = '$username'");
-
-    // cek username
-    if( mysqli_num_rows($result) === 1 ){
-
-        // cek password
-        $row = mysqli_fetch_assoc($result);
-        if( password_verify($password, $row["password"]) ){
-            header("Location: index.html");
-            exit;
-        }
+$regis=mysqli_connect($host, $users, $pass);
+if($regis){
+    $buka=mysqli_select_db($regis, $database);
+    echo "Database dapat terhubung";
+    if(!$buka){
+        echo "Database tidak dapat terhubung";
     }
+}else{
+    echo "MySQL tidak Terhubung";
+}
+session_start();
 
-    $error = true;
-
+// Periksa apakah pengguna sudah login
+if (isset($_POST["Login"])) {
+    // Jika sudah ada data username di session, redirect ke halaman index
+    header("Location: index.php");
+    exit();
 }
 
-?>
+// Koneksi ke database
+$servername = "127.0.0.1";
+$username_db = "nama_pengguna";
+$password_db = "kata_sandi";
+$database = "mahasiswa";
 
+$conn = mysqli_connect("localhost", "root", "", 
+"mahasiswa");
+
+
+// Periksa apakah form login sudah disubmit
+if (isset($_POST['Login'])) {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    // Query untuk mencari pengguna dengan username yang sesuai
+    $query = "SELECT * FROM `users` ORDER BY `users`.`username` ASC";
+    $result = mysqli_query($conn, $query);
+
+    if (mysqli_num_rows($result) == 1) {
+        $user = mysqli_fetch_assoc($result);
+
+        // Verifikasi password
+        if (password_verify($password, $users['password'])) {
+            // Jika login berhasil, simpan data username di session
+            $_SESSION['username'] = $username;
+            header('Location: index.php');
+            exit();
+        }
+    }
+    $error = 'Username atau password salah!';
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-      body {
-        background-image: url('Wow.jpg');
-        background-size: cover;
-      }
-      p {
-        color: white;
-      }
-
-      .Button {
-        padding: 5px 10px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 16px;
-        transition: background-color 0.3s ease;
-      }
-
-      .Button:hover {
-        background-color: #0056b3;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-      }
-
-      .Button a {
-        text-decoration: none;
-        color: white;
-      }
-
-      .Button:hover a {
-        color: black;
-      }
-
-      form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 50px;
-      }
-
-      h1 {
-        color: white;
-        text-align: center;
-        font-size: 24px;
-        margin-bottom: 20px;
-      }
-
-      .profil-img {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        overflow: hidden;
-      }
-
-      .box {
-        width: 200px;
-        height: 200px;
-        border: 1px solid black;
-        border-radius: 10px;
-      }
     <title>Halaman Login</title>
-    <style>
-        label{
-            display: block;
-        }
-    </style>
 </head>
 <body>
-
-<h1>Halaman Login</h1>
-
-<?php if( isset($error) ) : ?>
-    <p style="color: red; font-style: italic;">username atau password salah</p>
-<?php endif; ?>
-
-<form action="" method="post">
-
-    <ul>
-        <label for="username">Username :</label>
+    <h1>Halaman Login</h1>
+    
+    <?php if (isset($error)) { ?>
+        <p style="color: red;"><?php echo $error; ?></p>
+    <?php } ?>
+    
+    <form action="Login.php" method="POST">
+        <label for="username">Username:</label>
         <input type="text" name="username" id="username">
-    </ul>
-
-    <ul>
-        <label for="password">Password :</label>
+        
+        <label for="password">Password:</label>
         <input type="password" name="password" id="password">
-    </ul>
-
-    <ul>
+        
         <button type="submit" name="login">Login</button>
-    </ul>
-
-
-</form>
-
+    </form>
+   
 </body>
-</html>
 
-      
+
+</html>

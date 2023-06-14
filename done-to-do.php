@@ -1,5 +1,5 @@
 <?php 
-require 'regis.php';
+require 'database.php';
 function done($id){
     global $conn;
     $query = "UPDATE todo SET status = 'Selesai' WHERE id = $id";
