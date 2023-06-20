@@ -1,5 +1,5 @@
 <?php 
-require 'database.php';
+require 'todo.php';
 function display($query){
     global $conn;
     $result = mysqli_query($conn, $query);

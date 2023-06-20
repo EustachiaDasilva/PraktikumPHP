@@ -22,6 +22,16 @@ function registrasi($database){
     $password = mysqli_real_escape_string($regis, $database["password"]);
     $password2 = mysqli_real_escape_string($regis, $database["password2"]);
 
+    // cek username sudah ada atau belum
+    $result = mysqli_query($regis, "SELECT username FROM user WHERE username = '$username'");
+    
+    if( mysqli_fetch_assoc($result) ){
+        echo "<script>
+                alert('username sudah terdaftar!')
+            </script>";
+        return false;
+    }
+
     // cek konfirmasi password
     if( $password !== $password2 ){
         echo "<script>
@@ -33,7 +43,7 @@ function registrasi($database){
     // enkripsi password
     $password = password_hash($password, PASSWORD_DEFAULT);
 
-    // tambahkan userbaru ke dalam database
+    // tambahkan userbaru ke dalan database
     mysqli_query($regis, "INSERT INTO users VALUES('', '$username', '$password')");
 
     return mysqli_affected_rows($regis);
